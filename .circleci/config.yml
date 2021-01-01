@@ -1,0 +1,25 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: debian:testing-slim
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - run: cat /proc/cpuinfo
+      - run: sudo add-apt-repository 'ppa:ubuntu-toolchain-r/test' && sudo apt-get update && sudo apt-get install -y ninja-build ninja-build python3-pip python3-setuptools python3-wheel parallel gcovr libsleef-dev
+      - run: pip3 install meson
+      - run: ~/.local/bin/meson setup build -Db_coverage=true
+      - run: ninja -C build -v
+      - run: ninja -C build -v test
+
+workflows:
+   version: 2
+   jobs:
+    - test:
+        filters:
+          branches:
+            ignore:
+            - master
+            - /^ci/(?!circleci).*$/
