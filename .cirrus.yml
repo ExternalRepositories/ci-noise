@@ -74,3 +74,30 @@ task:
     - ninja -C build -v
   test_script:
     - ninja -C build -v test
+
+## Disabled pending a good solution for generating cross files
+##
+# task:
+#   name: POWER
+#   skip: $BRANCH == "master" || ($BRANCH != 'ci/cirrus' && $BRANCH =~ '^ci/.+')
+#   env:
+#     CC: powerpc64le-linux-gnu-gcc
+#     CXX: powerpc64le-linux-gnu-g++
+#     COMPILER_FLAGS: -Wextra -Werror
+#     matrix:
+#       - CPU: power7
+#       - CPU: power8
+#       - CPU: power9
+#   system_info_script:
+#   - cat /proc/cpuinfo
+#   - cat /proc/meminfo
+#   install_dependencies_script:
+#     - dpkg --add-architecture ppc64el
+#     - apt-get update
+#     - apt-get install -y ninja-build ninja-build python3-pip python3-setuptools python3-wheel gcovr
+#     - apt-get install -y gcc-powerpc64le-linux-gnu g++-powerpc64le-linux-gnu libc6-dev:ppc64el libstdc++6:ppc64el
+#     - pip3 install meson
+#   configure_script:
+#     - CFLAGS="${COMPILER_FLAGS} -mcpu=${CPU}" CXXFLAGS="${COMPILER_FLAGS} -mcpu=${CPU}" /usr/local/bin/meson setup build
+#   build_script:
+#     - ninja -C build -v -j 3
