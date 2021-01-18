@@ -22,3 +22,55 @@ task:
     - ninja -C build -v -j 3
   test_script:
     - ninja -C build -v test
+
+task:
+  name: clang-3.5
+  container:
+    image: ubuntu:xenial
+  skip: $BRANCH == "master" || ($BRANCH != 'ci/cirrus' && $BRANCH =~ '^ci/.+')
+  env:
+    CC: clang-3.5
+    CXX: clang++-3.5
+    CFLAGS: -Wextra -Werror -march=native
+    CXXFLAGS: -Wextra -Werror -march=native
+    LC_ALL: en_US.UTF-8
+    LC_CTYPE: en_US.UTF-8
+  system_info_script:
+  - cat /proc/cpuinfo
+  - cat /proc/meminfo
+  install_dependencies_script:
+    - apt-get update
+    - apt-get install -y ninja-build ninja-build python3-pip python3-setuptools python3-wheel gcovr clang-3.5
+    - pip3 install meson
+  configure_script:
+    - /usr/local/bin/meson setup build -Db_coverage=true -Db_sanitize=address,undefined
+  build_script:
+    - ninja -C build -v
+  test_script:
+    - ninja -C build -v test
+
+task:
+  name: gcc-4.7
+  container:
+    image: ubuntu:xenial
+  skip: $BRANCH == "master" || ($BRANCH != 'ci/cirrus' && $BRANCH =~ '^ci/.+')
+  env:
+    CC: gcc-4.7
+    CXX: g++-4.7
+    CFLAGS: -Wextra -Werror -march=native
+    CXXFLAGS: -Wextra -Werror -march=native
+    LC_ALL: en_US.UTF-8
+    LC_CTYPE: en_US.UTF-8
+  system_info_script:
+  - cat /proc/cpuinfo
+  - cat /proc/meminfo
+  install_dependencies_script:
+    - apt-get update
+    - apt-get install -y ninja-build ninja-build python3-pip python3-setuptools python3-wheel gcovr gcc-4.7 g++-4.7
+    - pip3 install meson
+  configure_script:
+    - /usr/local/bin/meson setup build -Db_coverage=true -Db_sanitize=address,undefined
+  build_script:
+    - ninja -C build -v
+  test_script:
+    - ninja -C build -v test
